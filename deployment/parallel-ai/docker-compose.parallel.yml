@@ -1,0 +1,40 @@
+services:
+  orchestrator:
+    image: ghcr.io/example/maos-orchestrator:latest
+    container_name: maos-orchestrator
+    environment:
+      - PLATFORM_MANIFEST=/config/platform-manifest.yaml
+      - MAOS_SIGNER_KEY=${MAOS_SIGNER_KEY}
+    volumes:
+      - ./platform-manifest.yaml:/config/platform-manifest.yaml:ro
+      - ../../examples:/data/examples
+    ports:
+      - "8080:8080"
+
+  worker-openai:
+    image: ghcr.io/example/maos-worker-openai:latest
+    env_file:
+      - ./openai.env
+    depends_on:
+      - orchestrator
+
+  worker-anthropic:
+    image: ghcr.io/example/maos-worker-anthropic:latest
+    env_file:
+      - ./anthropic.env
+    depends_on:
+      - orchestrator
+
+  worker-gemini:
+    image: ghcr.io/example/maos-worker-gemini:latest
+    env_file:
+      - ./gemini.env
+    depends_on:
+      - orchestrator
+
+  worker-local-oss:
+    image: ghcr.io/example/maos-worker-local:latest
+    env_file:
+      - ./local-oss.env
+    depends_on:
+      - orchestrator

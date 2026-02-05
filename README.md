@@ -95,3 +95,13 @@ Current repository contains concept docs only. Next step is to add:
 - `/spec/verifier-interface.md`
 - `/docs/threat-model.md`
 - `/examples/sample-attestations.jsonl`
+
+
+## Parallel Multi-Platform Deployment
+For running MA-OS across multiple AI platforms in parallel, use:
+- `deployment/parallel-ai/platform-manifest.yaml`
+- `deployment/parallel-ai/docker-compose.parallel.yml`
+- Provider env templates in `deployment/parallel-ai/*.env.example`
+
+Validation helper:
+- `python scripts/validate_parallel_config.py`
