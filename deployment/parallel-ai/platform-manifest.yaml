@@ -1,0 +1,54 @@
+version: maos.parallel.v1
+attestation_schema: ../../spec/attestation.schema.json
+orchestrator:
+  mode: quorum
+  min_agree: 2
+  max_latency_ms: 4000
+  fail_safe_status: terminated
+  output_contract:
+    version: maos.attestation.v1
+    signing_required: true
+providers:
+  - id: openai-main
+    type: openai
+    enabled: true
+    model: gpt-4.1
+    adapter: adapters/openai_adapter.py
+    timeout_ms: 3500
+  - id: anthropic-main
+    type: anthropic
+    enabled: true
+    model: claude-3-5-sonnet
+    adapter: adapters/anthropic_adapter.py
+    timeout_ms: 3500
+  - id: gemini-main
+    type: gemini
+    enabled: true
+    model: gemini-1.5-pro
+    adapter: adapters/gemini_adapter.py
+    timeout_ms: 3500
+  - id: local-oss-fallback
+    type: local
+    enabled: true
+    model: mistral-7b-instruct
+    adapter: adapters/local_adapter.py
+    timeout_ms: 2500
+normalization:
+  required_fields:
+    - decision_id
+    - timestamp
+    - input_hash
+    - decision_hash
+    - status
+  status_map:
+    allow: approved
+    block: rejected
+    stop: terminated
+signing:
+  scheme: ed25519
+  key_ref: MAOS_SIGNER_KEY
+  key_id: raqia-main-01
+logging:
+  jsonl_path: ../../examples/sample-attestations.jsonl
+  append_only: true
+  hash_chain: true
