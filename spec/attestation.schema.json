@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qualia/spec/maos.attestation.v1.schema.json",
+  "title": "MA-OS Attestation v1",
+  "type": "object",
+  "required": [
+    "version",
+    "decision_id",
+    "timestamp",
+    "subject_ratio",
+    "input_hash",
+    "decision_hash",
+    "policy",
+    "status",
+    "signature"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "maos.attestation.v1"
+    },
+    "decision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "subject_ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "input_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "decision_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "policy": {
+      "type": "object",
+      "required": ["max_depth", "termination_mode"],
+      "properties": {
+        "max_depth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "termination_mode": {
+          "type": "string",
+          "enum": ["dynamic_truncation", "hard_stop"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": ["approved", "rejected", "terminated"]
+    },
+    "signature": {
+      "type": "object",
+      "required": ["scheme", "key_id", "sig"],
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "const": "ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sig": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
