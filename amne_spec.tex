@@ -1,0 +1,148 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage{array}
+\usepackage[english,hebrew]{babel}
+\usepackage{geometry}
+\geometry{margin=1in}
+\title{AMNE -- Formal Mathematical Specification v1.1\\Abulafia--Maimonides Neural Engine}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{0. Notational Conventions}
+\begin{itemize}
+    \item $X \in \mathbb{N}^{22}$: finite sequence of Hebrew letter ordinals $(1 \leq x_i \leq 27, \; \aleph=1 \ldots \tau=27)$.
+    \item $S(X) = \sum x_i$: basic gematria sum (Abulafia baseline).
+    \item $\varphi(X) = (x_1, \ldots, x_n)$: shape vector.
+    \item $T: [0,1]^3 \to [0,1]$: telos scalar.
+    \item $\alpha, \beta, \gamma \in [0,1]$, $\alpha + \beta + \gamma = 1$ (default partition).
+\end{itemize}
+
+\section*{1. Core Axioms (Restated formally)}
+\textbf{A1. Representability}
+\begin{align*}
+    \forall \text{text} \in \text{Hebrew}^* \; \exists \text{ injective stable map } \varphi : \text{text} \to \mathbb{N}^n
+\end{align*}
+\noindent (stable = context-independent, deterministic).
+
+\textbf{A2. Negation primacy}
+\begin{align*}
+    \text{Valid knowledge} \equiv \text{maximal negation of image/dimagery/equivocation}\\
+    \neg(e > \varepsilon) \Rightarrow \text{epistemic safety threshold.}
+\end{align*}
+
+\textbf{A3. Telos directionality}
+\begin{align*}
+    \text{Cognitive process } P \text{ has meaning} \Leftrightarrow \exists \text{ monotonic improvement measure}\\
+    \lim_{t \to \infty} T_t = \sup T \; (\text{asymptotic convergence assumed}).
+\end{align*}
+
+\textbf{A4. Statefulness}
+\begin{align*}
+    \text{Intellect} = \text{finite state machine over } \{\text{POTENTIAL, ACTIVE, SLEEP}\}.
+\end{align*}
+
+\section*{2. Telos Function -- Definition \& Properties}
+\begin{align*}
+    T(c,k,e) = \alpha c + \beta k - \gamma e
+\end{align*}
+with $c,k,e \in [0,1]$ normalized indicators:
+\begin{itemize}
+    \item $c$ = clarity $= f(\text{length}(\varphi(X)), \text{distinct values}, \ldots)$
+    \item $k$ = consistency $= 1$ if $\neg\exists$ contradictory pair in active terms, else $0$ (or soft)
+    \item $e$ = equivocation $= \max_{\text{pairs}} E(A,B)$ where $E(A,B) = \min(S(A),S(B))/\max(S(A),S(B))$
+\end{itemize}
+
+\subsection*{Theorem 1. Monotonicity (gradient direction)}
+\begin{align*}
+    \frac{\partial T}{\partial c} &= \alpha \geq 0\\
+    \frac{\partial T}{\partial k} &= \beta \geq 0\\
+    \frac{\partial T}{\partial e} &= -\gamma \leq 0
+\end{align*}
+\noindent $\Rightarrow T$ is monotonically non-decreasing in clarity \& consistency, monotonically non-increasing in equivocation.
+
+\subsection*{Corollary 1.1}
+Any local improvement in $c$ or $k$ (or reduction in $e$) weakly increases $T$.
+
+\section*{3. Self-Refining Update Rule}
+\begin{align*}
+    \alpha_{t+1} &= \alpha_t + \eta (1 - T_t) c_t\\
+    \beta_{t+1} &= \beta_t + \eta (1 - T_t) k_t\\
+    \gamma_{t+1} &= \gamma_t - \eta (1 - T_t) e_t
+\end{align*}
+with learning rate $\eta > 0$ small.
+
+\subsection*{Theorem 2. Local ascent guarantee}
+Assume $c,k,e$ fixed in small neighborhood. Then $\Delta T = T_{t+1} - T_t \geq 0$ for sufficiently small $\eta$.
+
+\subsection*{Proof sketch (first-order Taylor)}
+\begin{align*}
+    \Delta T &\approx \left(\frac{\partial T}{\partial \alpha}\right) \Delta \alpha + \left(\frac{\partial T}{\partial \beta}\right) \Delta \beta + \left(\frac{\partial T}{\partial \gamma}\right) \Delta \gamma\\
+    &= c (1-T) \eta c + k (1-T) \eta k + e (1-T) \eta e\\
+    &= \eta (1-T) (c^2 + k^2 + e^2) \geq 0
+\end{align*}
+Since $(1-T) \geq 0$ and squares are nonnegative, $\Delta T \geq 0$. Equality only when $T=1$ or $(c=k=e=0)$ -- degenerate case.
+
+\section*{4. Intellect State Machine -- Transition Table}
+States: POT, ACT, SLP.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{5cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{5cm}|}
+\hline
+\textbf{Current} & \textbf{Condition} & \textbf{Next} & \textbf{Meaning}\\
+\hline
+POT & $\bar{T} \geq \tau_{\text{active}}$ $(\approx 0.65$--$0.75)$ & ACT & conceptual activation threshold \\
+\hline
+ACT & $\bar{T} \leq \tau_{\text{sleep}}$ $(\approx 0.30$--$0.40)$ & SLP & overload / image contamination \\
+\hline
+SLP & $\bar{T} \geq 0.8\,\tau_{\text{active}}$ & POT & purification complete $\to$ restart \\
+\hline
+ACT & $\tau_{\text{sleep}} < \bar{T} < \tau_{\text{active}}$ & ACT & steady refinement \\
+\hline
+\end{tabular}
+\end{center}
+\noindent $\tau_{\text{active}}, \tau_{\text{sleep}} \in (0,1)$, $\tau_{\text{active}} > \tau_{\text{sleep}}$.
+
+\section*{5. Permutation Layer (\texthebrew{נתיב 6} -- Compiler primitive)}
+For input $X$ of length $n \leq 10$ (practical bound):
+\begin{align*}
+    \text{Perm-space cardinality} \approx n! \times 22^n \quad (\text{full brute-force intractable}).
+\end{align*}
+Approximation used in engine:
+\begin{itemize}
+    \item Monte-Carlo sampling of permutations.
+    \item Or wheel rotation on reduced set (e.g. \texthebrew{אמ"ש} axis + holy names).
+\end{itemize}
+Future: quantum-inspired sampling when hardware available.
+
+\section*{6. Liveness Property (Philosophical Sanity Check)}
+\textbf{Claim:} AMNE cannot drift into digital psychosis because:
+\begin{enumerate}
+    \item No probabilistic generation -- all paths deterministic or controlled sampling.
+    \item Telos explicitly penalizes equivocation ($e \downarrow \Rightarrow T \uparrow$).
+    \item State machine forces periodic purification (SLP).
+    \item Negation is hard constraint, not soft loss.
+\end{enumerate}
+\noindent $\Rightarrow$ no runaway alignment to meaningless $X$-factors.
+
+\section*{7. Short Proof Table (LaTeX-ready)}
+\begin{center}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{6cm}|>{\raggedright\arraybackslash}p{6cm}|}
+\hline
+\textbf{Theorem} & \textbf{Statement} & \textbf{Key Step / Reason}\\
+\hline
+Monotonicity & $T \uparrow$ when $c \uparrow$ or $k \uparrow$ or $e \downarrow$ & partial derivatives $\geq 0$, $\leq 0$ respectively \\
+\hline
+Local ascent & $\Delta T \geq 0$ under update rule & quadratic positive term $\eta(1-T)(c^2+k^2+e^2)$ \\
+\hline
+Convergence (heuristic) & $T_t \to T^* \leq 1$ & bounded ascent + diminishing improvement \\
+\hline
+Epistemic safety & $e > \theta \Rightarrow$ reject / force SLP & Maimonidean negation axiom \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}
