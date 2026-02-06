@@ -1,0 +1,16 @@
+{
+  "engine": "AMNE Sovereign Engine",
+  "edition": "13th",
+  "components": [
+    "core",
+    "bridge",
+    "mcp"
+  ],
+  "axioms": [
+    "checksum",
+    "sovereignty",
+    "synchrony"
+  ],
+  "version": "1.0.0",
+  "checksum_offset": 790
+}
