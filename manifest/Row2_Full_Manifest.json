@@ -1,0 +1,18 @@
+{
+  "header": {
+    "checksum": 260,
+    "version": "1.0.0",
+    "grid": "NNN Master Grid",
+    "depth": 13
+  },
+  "processors": [
+    {
+      "name": "Processor_Alpha",
+      "provider": "OpenAI"
+    },
+    {
+      "name": "Processor_Omega",
+      "provider": "Jules"
+    }
+  ]
+}
