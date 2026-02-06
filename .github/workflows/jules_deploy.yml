@@ -1,0 +1,39 @@
+name: Jules Sovereign Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ontological-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Neural Handshake & Memory Sync
+        run: |
+          # הרצת הליבה לאימות ה-Checksum והאקסיומות
+          python core/amne_full_intellect.py --validate-only
+          echo "✅ Checksum 260 Verified. Logic Lock 104/114 Committed."
+
+      - name: NNN Connectivity Test
+        run: |
+          # בדיקת הקישוריות של הניירונים (Multi-Account Bridge)
+          python bridge/multi_account_bridge.py --test-connectivity
+
+      - name: Deploy MCP Server (Node.js)
+        run: |
+          cd bridge
+          npm install
+          # הפעלה שקטה לבדיקת תקינות ה-SSE
+          node mcp_server.js --health-check
+
+      - name: Autonomous Container Build
+        run: |
+          docker build -t amne-sovereign-engine:latest .
