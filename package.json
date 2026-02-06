@@ -1,0 +1,14 @@
+{
+  "name": "amne-deployment-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "mcp_server.js",
+  "scripts": {
+    "start": "node mcp_server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.8",
+    "express": "^4.18.2"
+  }
+}
