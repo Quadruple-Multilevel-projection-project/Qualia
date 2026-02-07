@@ -128,6 +128,48 @@ class AMNECompiler:
         }
 
 
+class UnifiedSystemBuilder:
+    """מערכת איחוד: מחברת קלטים מרובים ומסננת מה שאינו עומד בקריטריוני התכלית."""
+
+    def __init__(self, compiler: AMNECompiler, min_telos: float = 0.5) -> None:
+        self.compiler = compiler
+        self.min_telos = min_telos
+
+    def build(self, raw_inputs: List[str], context: List[str]) -> Dict[str, Any]:
+        """יוצר מערכת מאוחדת עם סינון פריטים שאינם מתאימים."""
+        accepted = []
+        rejected = []
+
+        for raw_input in raw_inputs:
+            result = self.compiler.compile(raw_input, context)
+            validation = result["validation"]
+            if validation["consistency"] and validation["telos_score"] >= self.min_telos:
+                accepted.append(result)
+            else:
+                rejected.append({
+                    "input": raw_input,
+                    "reason": {
+                        "consistency": validation["consistency"],
+                        "telos_score": validation["telos_score"],
+                    },
+                    "signature": result["metadata"]["signature"],
+                })
+
+        combined_signature = self.compiler.mapper.get_signature(
+            "|".join(item["metadata"]["signature"] for item in accepted)
+        ) if accepted else self.compiler.mapper.get_signature("")
+
+        return {
+            "system": {
+                "signature": combined_signature,
+                "accepted_count": len(accepted),
+                "rejected_count": len(rejected),
+            },
+            "accepted": accepted,
+            "rejected": rejected,
+        }
+
+
 if __name__ == "__main__":
     compiler = AMNECompiler()
 
