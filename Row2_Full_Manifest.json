@@ -1,0 +1,28 @@
+{
+  "header": {
+    "checksum": 260,
+    "title": "Sovereign 13th Edition - Pure Substance",
+    "version": "1.1.0"
+  },
+  "logic_map": [
+    {
+      "segment": "A1_Representability",
+      "essence": "Permutation_Logic",
+      "nnn_binding": 1
+    },
+    {
+      "segment": "A2_Negation_Primacy",
+      "essence": "Sanitization_Filter",
+      "nnn_binding": 2
+    },
+    {
+      "segment": "A4_Statefulness",
+      "essence": "Active_Intellect_Persistence",
+      "nnn_binding": 13
+    }
+  ],
+  "guards": {
+    "strict_semantic": true,
+    "no_statistics": true
+  }
+}
