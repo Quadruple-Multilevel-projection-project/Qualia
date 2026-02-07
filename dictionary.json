@@ -1,0 +1,17 @@
+{
+  "dictionary_metadata": {
+    "engine": "Chok_Gvul_HaYam_v1.0",
+    "structure": "26_Node_Cubic_X",
+    "logic_protocol": "Millot_HaHigayun"
+  },
+  "nodes": {
+    "1": {"char": "א", "type": "Root_Object", "axis": "NE_Upper"},
+    "14": {"char": "VOID", "type": "Singularity", "state": "Schrodinger_Cat"},
+    "26": {"char": "ץ", "type": "Limit_Attribute", "axis": "SW_Lower"}
+  },
+  "linking_rules": {
+    "X_Axis_1": "NE_to_SW",
+    "X_Axis_2": "NW_to_SE",
+    "convergence": "Center_Point_14"
+  }
+}
