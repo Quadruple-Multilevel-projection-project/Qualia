@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Axis 1: North-East (Logical Object)
+  ne_logic:
+    image: amne-kernel:latest
+    environment:
+      NODE_TYPE: "MASTER"
+      AXIS: "NE"
+  ne_quantum:
+    image: amne-quantum-sim:latest
+    environment:
+      NODE_TYPE: "SHADOW"
+      AXIS: "NE"
+
+  # Axis 2: North-West (Grammatical Case)
+  nw_logic:
+    image: amne-kernel:latest
+    environment:
+      NODE_TYPE: "MASTER"
+      AXIS: "NW"
+  nw_quantum:
+    image: amne-quantum-sim:latest
+    environment:
+      NODE_TYPE: "SHADOW"
+      AXIS: "NW"
+
+  # Axis 3: South-East (Quantum Semantics)
+  se_logic:
+    image: amne-kernel:latest
+    environment:
+      NODE_TYPE: "MASTER"
+      AXIS: "SE"
+  se_quantum:
+    image: amne-quantum-sim:latest
+    environment:
+      NODE_TYPE: "SHADOW"
+      AXIS: "SE"
+
+  # Axis 4: South-West (Boundary Enforcement)
+  sw_logic:
+    image: amne-kernel:latest
+    environment:
+      NODE_TYPE: "MASTER"
+      AXIS: "SW"
+  sw_quantum:
+    image: amne-quantum-sim:latest
+    environment:
+      NODE_TYPE: "SHADOW"
+      AXIS: "SW"
+
+  # Central hub - The singularity (X-intersection)
+  singularity_hub:
+    image: amne-hub:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ne_logic
+      - nw_logic
+      - se_logic
+      - sw_logic
