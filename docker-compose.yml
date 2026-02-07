@@ -6,16 +6,76 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - KERNEL_URL=http://logic_engine:5000
+      - KERNEL_URL=http://ne_master:5000
     depends_on:
-      - logic_engine
+      - ne_master
+      - ne_shadow
+      - nw_master
+      - nw_shadow
+      - se_master
+      - se_shadow
+      - sw_master
+      - sw_shadow
+    networks:
+      - amne_network
 
-  logic_engine:
+  ne_master:
     build:
       context: .
       dockerfile: Dockerfile.python
     ports:
       - "5000:5000"
+    networks:
+      - amne_network
+
+  ne_shadow:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
+
+  nw_master:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
+
+  nw_shadow:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
+
+  se_master:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
+
+  se_shadow:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
+
+  sw_master:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
+
+  sw_shadow:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    networks:
+      - amne_network
 
 networks:
   amne_network:
