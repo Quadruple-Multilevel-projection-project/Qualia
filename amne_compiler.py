@@ -63,6 +63,49 @@ class TelosOptimization:
         return max(0.0, min(1.0, score))
 
 
+class SevenPathsEngine:
+    """מנוע שבעה נתיבות: משנה חוקי פיזיקה מדומים ומריץ 'נס' כבדיקת יחידה."""
+
+    def __init__(self, mapper: AbulafiaMapper, logic: MaimonidesLogicGate) -> None:
+        self.mapper = mapper
+        self.logic = logic
+        self.paths = ["חסד", "גבורה", "תפארת", "נצח", "הוד", "יסוד", "מלכות"]
+        self.base_laws = {"causality": 0.7, "entropy": 0.6, "time": 0.8}
+
+    def _compute_shift(self, location_vector: str) -> float:
+        encoded_sum = sum(self.mapper.encode(location_vector))
+        return (encoded_sum % 20) / 100.0
+
+    def shift_physics(self, location_vector: str) -> Dict[str, float]:
+        """מחשב שינוי בחוקי פיזיקה בהתאם למקום חדש."""
+        shift = self._compute_shift(location_vector)
+        return {
+            law: max(0.0, min(1.0, value + shift))
+            for law, value in self.base_laws.items()
+        }
+
+    def miracle_unit_test(self, laws: Dict[str, float], context: List[str]) -> Dict[str, Any]:
+        """בודק אם ה'נס' אפשרי: עקביות לוגית ותחום חוקי הפיזיקה."""
+        consistency = self.logic.is_consistent(context)
+        in_range = all(0.0 <= value <= 1.0 for value in laws.values())
+        return {
+            "passed": consistency and in_range,
+            "consistency": consistency,
+            "in_range": in_range,
+            "note": "נס מאושר" if consistency and in_range else "נס נדחה",
+        }
+
+    def extrapolate_paths(self, location_vector: str, context: List[str]) -> Dict[str, Any]:
+        """מחזיר מפת נתיבים וחוקי פיזיקה למקום החדש."""
+        laws = self.shift_physics(location_vector)
+        return {
+            "location": location_vector,
+            "paths": self.paths,
+            "physics": laws,
+            "miracle_test": self.miracle_unit_test(laws, context),
+        }
+
+
 class AMNECompiler:
     """הקומפיילר המרכזי: מקבל טקסט ומייצר קוד בינארי/לוגי מוכוון תכלית."""
 
@@ -70,6 +113,7 @@ class AMNECompiler:
         self.mapper = AbulafiaMapper()
         self.logic = MaimonidesLogicGate()
         self.telos = TelosOptimization()
+        self.seven_paths = SevenPathsEngine(self.mapper, self.logic)
         self.state = "POTENTIAL"  # שכל בכוח
 
     def compile(self, raw_input: str, context: List[str]) -> Dict[str, Any]:
@@ -127,6 +171,10 @@ class AMNECompiler:
             },
         }
 
+    def extrapolate_with_seven_paths(self, location_vector: str, context: List[str]) -> Dict[str, Any]:
+        """אקסטרפולציה לנתיבי פיזיקה משתנים במקום חדש."""
+        return self.seven_paths.extrapolate_paths(location_vector, context)
+
 
 if __name__ == "__main__":
     compiler = AMNECompiler()
@@ -139,3 +187,9 @@ if __name__ == "__main__":
 
     print("--- AMNE COMPILER OUTPUT ---")
     print(json.dumps(result, indent=4, ensure_ascii=False))
+
+    new_location = "Quantum_Field_Alpha"
+    seven_paths_result = compiler.extrapolate_with_seven_paths(new_location, context_data)
+
+    print("\n--- SEVEN PATHS EXTRAPOLATION ---")
+    print(json.dumps(seven_paths_result, indent=4, ensure_ascii=False))
