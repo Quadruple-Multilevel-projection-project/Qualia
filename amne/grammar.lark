@@ -1,0 +1,13 @@
+start: statement+
+
+statement: subject relation object
+
+subject: TERM
+relation: RELATION
+object: TERM
+
+TERM: /[A-Za-zא-ת][A-Za-zא-ת0-9_ -]*/
+RELATION: "נמצא"|"צירוף"|"נבואי"|"שכל פועל"|"exists"|"conjoins"|"prophetic"|"active_intellect"
+
+%import common.WS
+%ignore WS

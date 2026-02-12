@@ -1,0 +1,4 @@
+boto3==1.35.95
+lark==1.2.2
+dash==2.18.2
+dash-cytoscape==1.0.2
