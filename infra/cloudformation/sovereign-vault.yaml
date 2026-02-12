@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Sovereign vault infrastructure (S3 + KMS + IAM role policy)
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: sovereign-vault
+  RoleName:
+    Type: String
+    Default: sovereign-ascension-role
+  GitHubOrg:
+    Type: String
+    Default: your-org
+  GitHubRepo:
+    Type: String
+    Default: your-repo
+
+Resources:
+  SovereignMasterKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: KMS key for sovereign audit trail encryption
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: EnableRoot
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action: 'kms:*'
+            Resource: '*'
+
+  SovereignMasterAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/sovereign-master-key
+      TargetKeyId: !Ref SovereignMasterKey
+
+  SovereignVaultBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      ObjectLockEnabled: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !GetAtt SovereignMasterKey.Arn
+
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [ sts.amazonaws.com ]
+      ThumbprintList: [ '6938fd4d98bab03faadb97b34396831e3780aea1' ]
+
+  SovereignAscensionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubOIDCProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:*
+      Policies:
+        - PolicyName: SovereignVaultMultipartPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:CreateMultipartUpload
+                  - s3:UploadPart
+                  - s3:CompleteMultipartUpload
+                  - s3:AbortMultipartUpload
+                  - s3:ListMultipartUploadParts
+                Resource:
+                  - !Sub arn:aws:s3:::${BucketName}
+                  - !Sub arn:aws:s3:::${BucketName}/*
+              - Effect: Allow
+                Action:
+                  - kms:Encrypt
+                  - kms:Decrypt
+                  - kms:GenerateDataKey
+                  - kms:DescribeKey
+                Resource: !GetAtt SovereignMasterKey.Arn
+
+Outputs:
+  BucketName:
+    Value: !Ref SovereignVaultBucket
+  KmsKeyArn:
+    Value: !GetAtt SovereignMasterKey.Arn
+  RoleArn:
+    Value: !GetAtt SovereignAscensionRole.Arn

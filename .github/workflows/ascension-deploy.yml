@@ -1,0 +1,59 @@
+name: Ascension Deploy
+
+on:
+  push:
+    paths:
+      - 'releases/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      BUCKET_NAME: ${{ vars.SOVEREIGN_BUCKET }}
+      KMS_KEY_ID: ${{ vars.SOVEREIGN_KMS_KEY_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload and verify integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar
+
+          for file in releases/**; do
+            if [[ -f "$file" ]]; then
+              key="$file"
+              hash=$(sha256sum "$file" | awk '{print $1}')
+
+              aws s3 cp "$file" "s3://${BUCKET_NAME}/${key}" \
+                --sse aws:kms \
+                --sse-kms-key-id "$KMS_KEY_ID" \
+                --metadata "sha256=${hash}"
+
+              remote_hash=$(aws s3api head-object \
+                --bucket "$BUCKET_NAME" \
+                --key "$key" \
+                --query 'Metadata.sha256' \
+                --output text)
+
+              if [[ "$remote_hash" != "$hash" ]]; then
+                echo "Integrity check failed for $key"
+                echo "local=$hash remote=$remote_hash"
+                exit 1
+              fi
+
+              echo "Integrity verified for $key"
+            fi
+          done
