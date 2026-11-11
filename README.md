@@ -1,5 +1,6 @@
 # Qualia
-https://qnrfirstchpter.blogspot.com 
+https://qnrfirstchpter.blogspot.com
+
 AI231 / QUALIA
 
 A Research Initiative in Logic-Shaped Synthetic Cognition
@@ -30,6 +31,20 @@ This is not a claim that artificial systems possess a human soul or biological c
 The immediate experimental objective is to develop and evaluate a prototype neural processing unit based on the first foundational symbol, followed by controlled expansion toward the complete 22-unit architecture.
 
 All proposed capabilities remain subject to experimental validation.
+
+## Logical Islands Economy
+
+The Logical Islands Economy extends the project into a proposed economic framework: protect the foundational logical infrastructure, commercialise the applications and outputs it enables, and direct agreed portions of distributable value toward development partners, ecosystem expansion and public advancement.
+
+The proposed framework includes:
+- A Logical Currency, subject to legal classification, issuance, reserve and redemption design.
+- A Logical Stock Market for eligible operating companies and ventures—not ownership of the foundational logical architecture.
+- A separately governed Logical Islands Fund for expansion, public advancement and, if formally designed, transparent currency reserve support.
+- Contribution-based participation for documented development partners.
+
+These mechanisms are proposals, not launched financial products. No token issuance, securities offering, exchange operation, reserve backing or guaranteed return is represented as existing.
+
+See [docs/logical-islands-economy.md](docs/logical-islands-economy.md) for the full framework.
 
 AI231 / QUALIA
 
